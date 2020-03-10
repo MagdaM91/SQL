@@ -1,2 +1,2 @@
 # SQL
-Developing my self in SQL
+Developing myself in SQL
