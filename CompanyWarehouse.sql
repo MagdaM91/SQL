@@ -192,3 +192,46 @@ where State is null;
 
 SELECT BillingCity, substr(BillingCity, LENGTH(BillingCity)) as "LastLetter"
 from Invoice;
+                                               
+--30. Print how many Track has each Album
+
+select AlbumId, count(AlbumId) as 'Amount of Track'
+from Track
+group by albumid
+order by count(AlbumId) desc;
+
+
+--31. Check how many second last each Album
+
+select AlbumId, sum(Milliseconds)
+from Track
+group by AlbumId
+order by sum(Milliseconds) desc;
+
+
+--32. How many gender are assigned to Album
+
+select GenreId, count(AlbumId) 
+from Track
+group by GenreId
+order by GenreId;
+
+
+--33. How many albums was created by more than one Composer
+
+select count(Composer)
+from Track
+where instr(Composer, ',')> 0 or instr(Composer, '/')> 0 or instr(Composer, '&')> 0 or instr(Composer, '&')> 0;
+
+--34. How many albums was created by Queen band
+
+SELECT count(Composer)
+from track
+where Composer = 'Queen';
+
+
+--35. How many second last Queens songs and how many GB it consuming
+
+select sum(Milliseconds), sum(Bytes)
+from Track
+where Composer = 'Queen';
