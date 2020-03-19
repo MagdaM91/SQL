@@ -235,3 +235,117 @@ where Composer = 'Queen';
 select sum(Milliseconds), sum(Bytes)
 from Track
 where Composer = 'Queen';
+
+                                               
+--36. Create view which will show report: Amount of invoices per each month for specyfic cilent
+create  view ExampleView as 
+select substr(InvoiceDate, 1, 7) as MonthlyDate, count(CustomerId) as AmountOfInvoices, CustomerId
+from Invoice
+group by MonthlyDate, CustomerId
+order by InvoiceId; 
+
+--37. Creat monthly sales report view
+-- Details: Amount of invoices per each month for chosen Customer,
+-- Income per each month for chosen customer, FirstName, LastName (incom is a sum of total)
+create view MonthlyReport as 
+
+with Subquery as (select substr(InvoiceDate, 1, 7) as MonthlyDate, 
+Customer.CustomerId, count(Invoice.CustomerId) as AmountofInvoices, Customer.FirstName, Customer.LastName, 
+sum(Invoice.total) as SumOfInvoice
+from Invoice
+join Customer on Invoice.CustomerId = Customer.CustomerId
+group by MonthlyDate, Customer.CustomerId
+order by Invoice.InvoiceId)
+select * from Subquery order by Subquery.MonthlyDate, Subquery.SumOfInvoice desc;
+
+select * from MonthlyReport ;
+
+
+--38.Create table Library and students. Library should have column BookId(primarykey, not null), Title, Author, release date, 
+--BookedBy (foreingkey to students table)
+-- Table students should have StudentID(primary key, not null), FirstName, LastName, ShoolName
+-- Table BookingDetails where will be column as following: StudentId, BookId, Title, Author, BookedFrom(date),
+--BookedTo (date).
+
+
+--Figure out Name of students and add them his own id's and insert to table Students(at least 3 students)
+--Insert at least 5 books and give him ID, insert into column (BookedBy id of students how want to borrow book)
+--Insert data to table BookingDetails and insert which student borrowe which book and set BookedFrom date
+--(it should be date when he or she borrowed book)
+--If students won't return book yest left BookedTo column as null
+
+Create table Library 
+(BookId integer primary key not null,
+Title text not null,
+Author TEXT not null,
+ReleaseDate datetime not null,
+BookedBy integer,
+foreign Key(BookedBy)references "Students" (Studentid));
+
+Insert into Library (Bookid, Title, Author, ReleaseDate, BookedBy)
+Values (1, 'Harry', 'Rowling', '1992-01-01', 2),
+(2, 'Male kobietki', 'Gerwig', '2003-02-03', 6),
+(3, 'Ptaki ciernistych krzewow', 'Collen', '1809-04-05', 3),
+(4, 'Moje marzenia', 'Kowalewski', '1990-04-09', 4),
+(5, 'Urwisko', 'Piekarska', '2003-07-09', 4),
+(6, 'Pieklo', 'Piatek', '1999-11-12', 2);
+
+select *
+from Library;
+
+
+
+Create table Students
+(StudentId integer not null,
+FirstName TEXT not null,
+LastName Text not null,
+SchoolName TEXT not null);
+
+Insert into Students (StudentId, FirstName, LastName, SchoolName)
+Values (1, 'Tomek', 'Nowak', 'UMCS'),
+(2, 'Jan', 'Kowalski', 'KUL'),
+(3, 'Weronika', 'Maj', 'UM'),
+(4, 'Albert', 'Nosaczowski', 'KUL'),
+(5, 'Dawid', 'Kozak', 'UMCS'),
+(6, 'Maria', 'Marecka', 'UMCS');
+
+select *
+from students;
+
+Create table BookingDetails
+(StudentId integer not null,
+BookId integer not null,
+Title text not null,
+Author  text not null,
+BookedFrom datetime not null,
+BookedTo datetime);
+
+Insert into BookingDetails (StudentId, BookId, Title, Author, BookedFrom, BookedTo)
+values (2, 1, 'Harry', 'Rowling', '2020-01-03', '2020-03-01'),
+(6, 2, 'Male kobietki', 'Gerwig', '2020-02-12', null),
+(3, 3, 'Ptaki ciernistych krzewow', 'Collen', '2020-01-23', null),
+(4, 4, 'Moje marzenia', 'Kowalewski', '2020-02-02', '2020-03-03'),
+(4, 5, 'Urwisko', 'Piekarska', '2020-02-06', null),
+(2, 6, 'Pieklo', 'Piatek', '2020-01-08', null);
+
+select *
+from BookingDetails;
+
+
+select * from BookingDetails
+delete from BookingDetails
+where 1=1
+
+--39. Select Firstname, Lastname of students, who didn't get back books.
+
+select Students.FirstName, Students.LastName
+from Students
+join BookingDetails on Students.StudentId = BookingDetails.StudentId
+where BookingDetails.BookedTo is null;
+
+--40.Choose students from UMCS, who didn't get back books.
+
+select students.FirstName, Students.LastName
+from Students
+join BookingDetails on Students.StudentId = BookingDetails.StudentId
+where BookingDetails.BookedTo is null and Students.SchoolName = 'UMCS';
