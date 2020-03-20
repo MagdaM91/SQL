@@ -349,3 +349,26 @@ select students.FirstName, Students.LastName
 from Students
 join BookingDetails on Students.StudentId = BookingDetails.StudentId
 where BookingDetails.BookedTo is null and Students.SchoolName = 'UMCS';
+                                            
+--41. Sum of total, which is highest than avarage of all invoices.
+
+Select sum(total)
+from Invoice 
+where total > (select avg(total) from invoice);
+
+--42.Avarage amount of albums of artist who publiced more than 2 albums.
+
+Select avg(how_many)
+from (select count(*) as how_many
+		from Album 
+		group by ArtistId 
+		HAVING how_many >2);
+	
+--43. Rows which contains customerid, total above avarage of invoices. This difference should be > 0
+select i1.customerid, 
+(i1.total - ( Select avg(i2.total)
+			from invoice as i2 
+			where i1.customerid = i2.customerid)) as above_avarage
+from invoice as i1
+where above_avarage > 0;
+
